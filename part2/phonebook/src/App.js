@@ -10,6 +10,15 @@ const App = () => {
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
+
+    //check if same name exists
+    const existingContact = persons.find((person) => person.name === newName);
+
+    if (existingContact) {
+      alert(`${newName} is already added to phonebook`);
+      return;
+    }
+
     setPersons(persons.concat({ name: newName }));
   };
 
