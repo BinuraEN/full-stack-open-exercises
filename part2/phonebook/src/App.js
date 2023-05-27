@@ -1,4 +1,7 @@
 import { useState } from "react";
+import Filter from "./components/Filter";
+import PersonForm from "./components/PersonForm";
+import Persons from "./components/Persons";
 
 const App = () => {
   const [persons, setPersons] = useState([
@@ -33,43 +36,24 @@ const App = () => {
     }
 
     setPersons(persons.concat({ name: newName, number: newPhoneNumber }));
+    setNewName("");
+    setNewPhoneNumber("");
   };
 
   return (
     <div>
       <h2>Phonebook</h2>
-      filter shown with{" "}
-      <input type="text" value={filter} onChange={handleFilterChange} />
-      <h2>add a new</h2>
-      <form onSubmit={handleFormSubmit}>
-        <div>
-          name: <input value={newName} onChange={handleNameChange} />
-          <br />
-          number:{" "}
-          <input value={newPhoneNumber} onChange={handlePhoneNumberChange} />
-        </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
-      <h2>Numbers</h2>
-      {persons.map((person) => {
-        if (filter.toUpperCase() === "") {
-          return (
-            <p>
-              {person.name} {person.number}
-            </p>
-          );
-        } else {
-          if (person.name.toUpperCase().includes(filter.toUpperCase())) {
-            return (
-              <p>
-                {person.name} {person.number}
-              </p>
-            );
-          } else return null;
-        }
-      })}
+      <Filter filterValue={filter} handleFilterChange={handleFilterChange} />
+      <h3>Add a new</h3>
+      <PersonForm
+        newName={newName}
+        newPhoneNumber={newPhoneNumber}
+        handleFormSubmit={handleFormSubmit}
+        handleNameChange={handleNameChange}
+        handlePhoneNumberChange={handlePhoneNumberChange}
+      />
+      <h3>Numbers</h3>
+      <Persons persons={persons} filter={filter} />
     </div>
   );
 };
