@@ -3,6 +3,7 @@ import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
 import noteService from "./services";
+import Notification from "./components/Notification";
 
 const App = () => {
   const [persons, setPersons] = useState([,]);
@@ -10,6 +11,8 @@ const App = () => {
   const [newName, setNewName] = useState("");
   const [newPhoneNumber, setNewPhoneNumber] = useState("");
   const [filter, setFilter] = useState("");
+  const [message, setMessage] = useState(null);
+  const [messageType, setMessageType] = useState(null);
 
   useEffect(() => {
     noteService.getAll().then((data) => {
@@ -51,12 +54,23 @@ const App = () => {
               );
               setNewName("");
               setNewPhoneNumber("");
+              setMessage(`Updated ${existingContact.name}`);
+              setTimeout(() => {
+                setMessage(null);
+              }, 3000);
             })
             .catch((err) => {
-              console.log("could not save data due to error: ", err);
+              setMessage(
+                `Information of ${existingContact.name} has already been removed from server`
+              );
+              setMessageType("error");
+              setTimeout(() => {
+                setMessage(null);
+                setMessageType(null);
+              }, 3000);
             });
-          return;
         }
+        return;
       }
 
       alert(`${newName} is already added to phonebook`);
@@ -73,8 +87,18 @@ const App = () => {
         setPersons(persons.concat(data));
         setNewName("");
         setNewPhoneNumber("");
+        setMessage(`Added ${newContact.name}`);
+        setTimeout(() => {
+          setMessage(null);
+        }, 3000);
       })
       .catch((err) => {
+        setMessage(`Could not add ${newContact.name}`);
+        setMessageType("error");
+        setTimeout(() => {
+          setMessage(null);
+          setMessageType(null);
+        }, 3000);
         console.log("could not save data due to error: ", err);
       });
   };
@@ -90,7 +114,14 @@ const App = () => {
             setPersons(persons.filter((person) => person.id !== id));
           })
           .catch((err) => {
-            console.log("could not delete contact due to error: ", err);
+            setMessage(
+              `Information of ${person.name} has already been removed from server`
+            );
+            setMessageType("error");
+            setTimeout(() => {
+              setMessage(null);
+              setMessageType(null);
+            }, 3000);
           });
       }
     }
@@ -99,6 +130,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={message} type={messageType} />
       <Filter filterValue={filter} handleFilterChange={handleFilterChange} />
       <h3>Add a new</h3>
       <PersonForm
